@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import psycopg2.extras
 import psycopg2.extensions
@@ -34,7 +34,7 @@ class Database:
 
     def fetch_one(self, sql, *args) -> Dict:
         with self._db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-            transcation_fails = 0
+            transaction_fails = 0
             while True:
                 try:
                     cur.execute(sql, args)
@@ -44,8 +44,8 @@ class Database:
                 except psycopg2.extensions.TransactionRollbackError:
                     self.logger.warning('Transaction Error Rollback triggered')
                     self._db.rollbak()
-                    transcation_fails += 1
-                    if transcation_fails > self.MAX_RETRIES:
+                    transaction_fails += 1
+                    if transaction_fails > self.MAX_RETRIES:
                         raise
                 except Exception:
                     self.logger.warning('Rollback triggered')
@@ -54,7 +54,7 @@ class Database:
 
     def fetch_all(self, sql, *args) -> List[Dict]:
         with self._db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-            transcation_fails = 0
+            transaction_fails = 0
             while True:
                 try:
                     cur.execute(sql, args)
@@ -64,10 +64,33 @@ class Database:
                 except psycopg2.extensions.TransactionRollbackError:
                     self.logger.warning('Transaction Error Rollback triggered')
                     self._db.rollbak()
-                    transcation_fails += 1
-                    if transcation_fails > self.MAX_RETRIES:
+                    transaction_fails += 1
+                    if transaction_fails > self.MAX_RETRIES:
                         raise
                 except Exception:
                     self.logger.warning('Rollback triggered')
                     self._db.rollback()
                     raise
+
+    def execute(self, sql: str, return_row: bool, *args) -> Optional[int]:
+        new_row_id = None
+        with self._db.cursor() as cur:
+            transaction_fails = 0
+            while True:
+                try:
+                    cur.execute(sql, args)
+                    if return_row is True:
+                        new_row_id = cur.fetchone()[0]
+                    self._db.commit()
+                    break
+                except psycopg2.extensions.TransactionRollbackError:
+                    self.logger.warning('Transaction Error Rollback triggered')
+                    self._db.rollbak()
+                    transaction_fails += 1
+                    if transaction_fails > self.MAX_RETRIES:
+                        raise
+                except Exception:
+                    self.logger.warning('Rollback triggered')
+                    self._db.rollback()
+                    raise
+        return new_row_id
