@@ -20,6 +20,7 @@ CREATE TABLE users (
     email varchar(255) NOT NULL,
     password varchar(255) NOT NULL,
     salt varchar(255) NOT NULL,
+    active boolean DEFAULT true,
     created_at timestamp DEFAULT NOW(),
     updated_at timestamp,
     deleted_at timestamp,
