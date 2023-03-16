@@ -1,6 +1,5 @@
 import os
-
-import yaml
+qimport yaml
 
 from yaml.loader import SafeLoader
 
