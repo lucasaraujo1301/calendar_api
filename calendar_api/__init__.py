@@ -32,9 +32,4 @@ def create_app(test_config=None):
 
     app.register_blueprint(login.app)
 
-    # a simple page that says hello
-    @app.route('/')
-    def hello():
-        return 'Hello, World!'
-
     return app
