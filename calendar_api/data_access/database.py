@@ -19,7 +19,6 @@ class Database:
 
         # Store the connection string for reconnect
         self.connection_string[db_name] = connection_string
-        self._db = connection
         return connection
 
     def close_db(self):

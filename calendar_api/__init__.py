@@ -1,11 +1,11 @@
 import os
 
 from flask import Flask, g
-from flask_bcrypt import Bcrypt
 from calendar_api.blueprints import login
+from calendar_api.core import Core
 
 
-def create_app(test_config=None):
+def create_app():
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
@@ -28,7 +28,7 @@ def create_app(test_config=None):
 
     @app.before_request
     def before_request():
-        g.core = "Core"
+        g.core = Core()
 
     app.register_blueprint(login.app)
 
