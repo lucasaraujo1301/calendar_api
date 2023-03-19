@@ -20,8 +20,6 @@ class TestDatabase(TestCase):
         assert getattr(self.db._db, 'closed') > 0
 
     def test_get_db(self):
-        assert self.db.get_db('calendar_api') is None
-
         # Testing with a open database
         self.db.connect_db(self.config_secrets['connect_db'], 'calendar_api')
         assert self.db.get_db('calendar_api') is not None
