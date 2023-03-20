@@ -35,7 +35,7 @@ jobs:
       - name: Execute SQL scripts
         run: |
           for sql_file in $(ls sql/*.sql); do
-            cat $sql_file | PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB
+            cat $sql_file | PGPASSWORD=$POSTGRES_PASSWORD psql -U $POSTGRES_USER -d $POSTGRES_DB
           done
         env:
           POSTGRES_HOST: localhost
