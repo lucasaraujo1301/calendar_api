@@ -7,5 +7,6 @@ path = os.path.dirname(__file__)
 
 
 def get_config_secrets():
-    with open(os.path.join(path, 'config/local_config.yaml'), 'r') as f:
+    config_file = os.environ['ENVIRONMENT_CONFIG']
+    with open(os.path.join(path, f'config/{config_file}.yaml'), 'r') as f:
         return yaml.load(f, Loader=SafeLoader)
