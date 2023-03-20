@@ -1,4 +1,3 @@
-import logging
 from unittest import TestCase
 from unittest.mock import patch
 from uuid import uuid4
