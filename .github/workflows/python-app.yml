@@ -16,13 +16,14 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    container: ubuntu
     services:
-      db:
+      postgres:
         image: postgres
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: calendar_api
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -33,9 +34,10 @@ jobs:
 
     steps:
       - name: Checkout repo
-      - uses: actions/checkout@v3
-      - name: Connect to database
-      - run: psql -U postgres -h db -p 5432 -d postgres -W postgres < ${{ github.workspace }}/sql/initial_sql.sql
+        uses: actions/checkout@v3
+      - name: Run SQL script
+        run: |
+          docker exec -i $(docker ps -q -f "name=postgres") psql -U postgres -d calendar_api < sql/initial_sql.sql
 #      - name: Set up Python 3.10
 #        uses: actions/setup-python@v3
 #        with:
