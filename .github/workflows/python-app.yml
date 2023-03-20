@@ -16,13 +16,22 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: calendar_api
+        ports:
+          - 5432:5432
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
       - name: Install PostgreSQL client
         run: |
-          apt-get update
-          apt-get -y install postgresql-client
+          sudo apt-get update
+          sudo apt-get -y install postgresql-client
       - name: Set up Python 3.10
         uses: actions/setup-python@v3
         with:
@@ -35,14 +44,14 @@ jobs:
       - name: Execute SQL scripts
         run: |
           for sql_file in $(ls sql/*.sql); do
-            cat $sql_file | PGPASSWORD=$POSTGRES_PASSWORD psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB
+            cat $sql_file | PGPASSWORD=$POSTGRES_PASSWORD psql -U $POSTGRES_USER -h $POSTGRES_HOST -d $POSTGRES_DB
           done
         env:
           POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
-          POSTGRES_USER: myuser
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: mydatabase
+          POSTGRES_DB: calendar_api
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
