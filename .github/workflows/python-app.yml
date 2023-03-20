@@ -40,9 +40,9 @@ jobs:
         env:
           POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
-          POSTGRES_USER: myuser
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: mydatabase
+          POSTGRES_DB: calendar_api
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
