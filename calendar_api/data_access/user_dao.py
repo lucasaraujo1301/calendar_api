@@ -14,7 +14,6 @@ class UserDao(Database):
                         users.cpf,
                         users.email,
                         users.active,
-                        users.password,
                         groups.name as group_name
                  FROM users
                  LEFT JOIN groups on groups.uuid = users.group_uuid;"""
