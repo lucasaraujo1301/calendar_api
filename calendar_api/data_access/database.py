@@ -77,17 +77,15 @@ class Database:
                     self._db.rollback()
                     raise
 
-    def execute(self, sql: str, return_row: bool, *args) -> Optional[UUID]:
+    def execute(self, sql: str, *args) -> None:
+        """Function to INSERT data to database."""
         if getattr(self._db, 'closed') > 0:
             self._db = self.get_db()
-        new_row_uuid = None
         with self._db.cursor() as cur:
             transaction_fails = 0
             while True:
                 try:
                     cur.execute(sql, args)
-                    if return_row is True:
-                        new_row_uuid = cur.fetchone()[0]
                     self._db.commit()
                     break
                 except psycopg2.extensions.TransactionRollbackError:
@@ -100,4 +98,3 @@ class Database:
                     self.logger.warning('Rollback triggered')
                     self._db.rollback()
                     raise
-        return new_row_uuid
