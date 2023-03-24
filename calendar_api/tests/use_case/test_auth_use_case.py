@@ -14,16 +14,16 @@ class TestAuthUseCase(TestCase):
         self.auth_use_case = Core().auth_use_case()
         self.user_dao = Core()._dao_factory.user_dao()
 
-    @patch('calendar_api.data_access.user_dao.UserDao.get_user_by_username_with_password')
-    def test_login(self, get_user_by_username_with_password_mock):
-        get_user_by_username_with_password_mock.return_value = None
+    @patch('calendar_api.data_access.user_dao.UserDao.get_user_by_email_with_password')
+    def test_login(self, get_user_by_email_with_password):
+        get_user_by_email_with_password.return_value = None
 
         # User doesn't exist
         payload = UserLoginRequest(username='test@test.com', password='test123')
         with pytest.raises(Exception, match="User doesn't exist."):
             self.auth_use_case.login(payload)
 
-        get_user_by_username_with_password_mock.return_value = UserLogin(
+        get_user_by_email_with_password.return_value = UserLogin(
             uuid=uuid4(),
             name='Test',
             cpf='12345678910',
@@ -39,7 +39,7 @@ class TestAuthUseCase(TestCase):
 
         # Success case
         payload = UserLoginRequest(username='admin@admin.com', password='admin123')
-        user = self.user_dao.get_user_by_username_with_password(payload.username)
+        user = self.user_dao.get_user_by_email_with_password(payload.username)
         request = self.auth_use_case.login(payload)
         assert request is not None
         assert request == user.uuid
