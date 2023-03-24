@@ -6,7 +6,7 @@ from flask import Flask, g
 from flask_jwt_extended import JWTManager
 
 from calendar_api.blueprints import login
-from calendar_api.core import Core
+from calendar_lib.core import Core
 
 
 def create_app():

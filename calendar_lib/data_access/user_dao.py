@@ -1,7 +1,7 @@
 from typing import Union, List
 
-from calendar_api.data_access.database import Database
-from calendar_api.data_classes.user import (
+from calendar_lib.data_access.database import Database
+from calendar_lib.data_classes.user import (
     User,
     UserLogin,
     CreateUserRequest

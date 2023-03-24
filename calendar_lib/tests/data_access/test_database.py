@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from calendar_api.data_access.database import Database
-from calendar_api.utils import get_config_secrets
+from calendar_lib.data_access.database import Database
+from calendar_lib.utils import get_config_secrets
 
 
 class TestDatabase(TestCase):

@@ -2,8 +2,8 @@ from logging import Logger
 from typing import List, Dict, Union, Tuple
 from uuid import UUID
 
-from calendar_api.data_access.user_dao import UserDao
-from calendar_api.data_classes.user import UserLoginRequest, CreateUserRequest
+from calendar_lib.data_access.user_dao import UserDao
+from calendar_lib.data_classes.user import UserLoginRequest, CreateUserRequest
 
 
 class AuthUseCase:

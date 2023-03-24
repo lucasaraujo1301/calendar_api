@@ -6,7 +6,7 @@ import pytest
 from flask_bcrypt import generate_password_hash
 
 from calendar_api import Core
-from calendar_api.data_classes.user import UserLoginRequest, UserLogin
+from calendar_lib.data_classes.user import UserLoginRequest, UserLogin
 
 
 class TestAuthUseCase(TestCase):
@@ -14,7 +14,7 @@ class TestAuthUseCase(TestCase):
         self.auth_use_case = Core().auth_use_case()
         self.user_dao = Core()._dao_factory.user_dao()
 
-    @patch('calendar_api.data_access.user_dao.UserDao.get_user_by_email_with_password')
+    @patch('calendar_lib.data_access.user_dao.UserDao.get_user_by_email_with_password')
     def test_login(self, get_user_by_email_with_password):
         get_user_by_email_with_password.return_value = None
 

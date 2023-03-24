@@ -1,9 +1,8 @@
 import psycopg2.errors
 from flask import Blueprint, jsonify, g, abort
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
-from psycopg2 import errorcodes
 
-from calendar_api.data_classes.user import UserLoginRequest, CreateUserRequest
+from calendar_lib.data_classes.user import UserLoginRequest, CreateUserRequest
 from calendar_api.decorators.validate_request import validate_json
 
 app = Blueprint('auth', __name__, url_prefix='/auth')
