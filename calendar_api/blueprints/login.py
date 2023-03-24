@@ -24,9 +24,9 @@ def login(user_request: UserLoginRequest):
 @validate_json(CreateUserRequest)
 def register(user_request: CreateUserRequest):
     try:
-        result = g.core.auth_use_case().register(user_request)
-        if result:
-            return jsonify({'errors': result}), 409
+        result, error = g.core.auth_use_case().register(user_request)
+        if error:
+            return jsonify({'errors': error}), 409
         return jsonify({'message': 'success'}), 200
     except psycopg2.Error as e:
         return jsonify(message=e.pgerror), 400

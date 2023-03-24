@@ -1,5 +1,5 @@
 from logging import Logger
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Tuple
 from uuid import UUID
 
 from calendar_api.data_access.user_dao import UserDao
@@ -12,7 +12,7 @@ class AuthUseCase:
         self._dao = user_dao
 
     def login(self, user_request: UserLoginRequest) -> UUID:
-        user = self._dao.get_user_by_username_with_password(user_request.username)
+        user = self._dao.get_user_by_email_with_password(user_request.username)
 
         if not user:
             self.logger.warning("User doesn't exist.")
@@ -24,17 +24,17 @@ class AuthUseCase:
         self.logger.warning('Password is wrong.')
         raise Exception('Password is wrong.')
 
-    def register(self, user_request: CreateUserRequest) -> Union[List[Dict], None]:
-        try:
-            errors = []
-            if self._dao.get_user_by_cpf(user_request.cpf):
-                errors.append({'cpf': 'CPF already exist.'})
-            if self._dao.get_user_by_email_with_password(user_request.email):
-                errors.append({'email': 'Email already exist.'})
-            if errors:
-                return errors
+    def register(self, user_request: CreateUserRequest) -> Union[Tuple[None, List[Dict]], Tuple[None, None]]:
+        errors = []
+        if self._dao.get_user_by_cpf(user_request.cpf):
+            errors.append({'cpf': 'CPF already exist.'})
+        if self._dao.get_user_by_email_with_password(user_request.email):
+            errors.append({'email': 'Email already exist.'})
+        if errors:
+            return None, errors
 
-            return self._dao.create_user(user_request)
+        try:
+            return self._dao.create_user(user_request), None
         except Exception as e:
             self.logger.warning('Something goes wrong: ', e)
             raise

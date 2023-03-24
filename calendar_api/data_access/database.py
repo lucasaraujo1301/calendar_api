@@ -1,6 +1,5 @@
 import logging
-from typing import Dict, List, Optional
-from uuid import UUID
+from typing import Dict, List
 
 import psycopg2.extras
 import psycopg2.extensions
