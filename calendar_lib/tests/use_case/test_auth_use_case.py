@@ -6,7 +6,7 @@ import pytest
 from flask_bcrypt import generate_password_hash
 
 from calendar_api import Core
-from calendar_lib.data_classes.user import UserLoginRequest, UserLogin
+from calendar_lib.data_classes.user import UserLoginRequest, UserLogin, GroupEnum
 
 
 class TestAuthUseCase(TestCase):
@@ -28,7 +28,7 @@ class TestAuthUseCase(TestCase):
             name='Test',
             cpf='12345678910',
             email='admin@admin.com',
-            group_name='Admin',
+            group_name=GroupEnum.admin,
             active=True,
             password=generate_password_hash('admin123', 10)
         )
@@ -42,4 +42,4 @@ class TestAuthUseCase(TestCase):
         user = self.user_dao.get_user_by_email_with_password(payload.username)
         request = self.auth_use_case.login(payload)
         assert request is not None
-        assert request == user.uuid
+        assert request.uuid == user.uuid

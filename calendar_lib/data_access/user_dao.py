@@ -44,6 +44,8 @@ class UserDao(Database):
         sql = """INSERT INTO users (name, cpf, email, password, group_uuid)
                  VALUES (%s, %s, %s, %s, %s);"""
 
+        # raise Exception(user.generate_password_hash())
+
         self.execute(sql, user.name, user.cpf, user.email, user.generate_password_hash(), user.group_uuid)
         return
 

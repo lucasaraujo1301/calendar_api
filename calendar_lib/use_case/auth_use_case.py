@@ -1,9 +1,8 @@
 from logging import Logger
 from typing import List, Dict, Union, Tuple
-from uuid import UUID
 
 from calendar_lib.data_access.user_dao import UserDao
-from calendar_lib.data_classes.user import UserLoginRequest, CreateUserRequest
+from calendar_lib.data_classes.user import UserLoginRequest, CreateUserRequest, User
 
 
 class AuthUseCase:
@@ -11,15 +10,15 @@ class AuthUseCase:
         self.logger = logger
         self._dao = user_dao
 
-    def login(self, user_request: UserLoginRequest) -> UUID:
+    def login(self, user_request: UserLoginRequest) -> User:
         user = self._dao.get_user_by_email_with_password(user_request.username)
-
+        self.logger.warning(user)
         if not user:
             self.logger.warning("User doesn't exist.")
             raise Exception("User doesn't exist.")
 
         if user.validate_password(user_request.password) and user.active:
-            return user.uuid
+            return user
 
         self.logger.warning('Password is wrong.')
         raise Exception('Password is wrong.')

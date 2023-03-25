@@ -1,7 +1,13 @@
 from dataclasses import dataclass
+from enum import Enum
 from uuid import UUID
 
 from flask_bcrypt import check_password_hash, generate_password_hash
+
+
+class GroupEnum(Enum):
+    admin = 'Admin'
+    user = 'User'
 
 
 @dataclass
@@ -11,12 +17,12 @@ class User:
     cpf: str
     email: str
     active: bool
-    group_name: str
+    group_name: GroupEnum
 
 
 @dataclass
 class UserLogin(User):
-    password: UUID
+    password: str
 
     def validate_password(self, password: str) -> bool:
         return check_password_hash(self.password, password)
@@ -37,4 +43,4 @@ class CreateUserRequest:
     password: str
 
     def generate_password_hash(self):
-        return generate_password_hash(self.password, 10)
+        return generate_password_hash(self.password, 10).decode('utf-8')

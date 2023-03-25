@@ -1,6 +1,6 @@
 import psycopg2.errors
 from flask import Blueprint, jsonify, g, abort
-from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
+from flask_jwt_extended import create_access_token
 
 from calendar_lib.data_classes.user import UserLoginRequest, CreateUserRequest
 from calendar_api.decorators.validate_request import validate_json
@@ -12,8 +12,8 @@ app = Blueprint('auth', __name__, url_prefix='/auth')
 @validate_json(UserLoginRequest)
 def login(user_request: UserLoginRequest):
     try:
-        user_uuid = g.core.auth_use_case().login(user_request)
-        access_token = create_access_token(identity=user_uuid)
+        user = g.core.auth_use_case().login(user_request)
+        access_token = create_access_token(identity=user.uuid, additional_claims={'group': user.group_name})
         return jsonify(access_token=access_token), 200
     except Exception:
         abort(401)
@@ -29,10 +29,3 @@ def register(user_request: CreateUserRequest):
         return jsonify({'message': 'success'}), 200
     except psycopg2.Error as e:
         return jsonify(message=e.pgerror), 400
-
-
-@app.route('/protect')
-@jwt_required()
-def protected():
-    current_user = get_jwt_identity()
-    return jsonify(logged_in_as=current_user), 200

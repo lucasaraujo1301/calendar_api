@@ -5,7 +5,7 @@ from datetime import timedelta
 from flask import Flask, g
 from flask_jwt_extended import JWTManager
 
-from calendar_api.blueprints import login
+from calendar_api.blueprints import login, user
 from calendar_lib.core import Core
 
 
@@ -15,7 +15,7 @@ def create_app():
     app.config.from_mapping(
         SECRET_KEY='dev',
         JWT_SECRET_KEY='dev',
-        JWT_ACCESS_TOKEN_EXPIRES=timedelta(days=1)
+        JWT_ACCESS_TOKEN_EXPIRES=timedelta(hours=1)
     )
     JWTManager(app)
 
@@ -30,5 +30,6 @@ def create_app():
         g.core = Core()
 
     app.register_blueprint(login.app)
+    app.register_blueprint(user.app)
 
     return app
