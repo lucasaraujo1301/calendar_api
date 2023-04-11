@@ -1,12 +1,11 @@
 from unittest import TestCase
 from unittest.mock import patch
-from uuid import uuid4
 
 import pytest
-from flask_bcrypt import generate_password_hash
 
 from calendar_api import Core
-from calendar_lib.data_classes.user import UserLoginRequest, UserLogin, GroupEnum
+from calendar_lib.data_classes.user import UserLoginRequest
+from calendar_lib.tests.helpers.user_mock import create_mock_user
 
 
 class TestAuthUseCase(TestCase):
@@ -14,32 +13,27 @@ class TestAuthUseCase(TestCase):
         self.auth_use_case = Core().auth_use_case()
         self.user_dao = Core()._dao_factory.user_dao()
 
-    @patch('calendar_lib.data_access.user_dao.UserDao.get_user_by_email_with_password')
-    def test_login(self, get_user_by_email_with_password):
-        get_user_by_email_with_password.return_value = None
-
+    def test_login_user_doesnt_exist(self):
         # User doesn't exist
         payload = UserLoginRequest(username='test@test.com', password='test123')
         with pytest.raises(Exception, match="User doesn't exist."):
             self.auth_use_case.login(payload)
 
-        get_user_by_email_with_password.return_value = UserLogin(
-            uuid=uuid4(),
-            name='Test',
-            cpf='12345678910',
-            email='admin@admin.com',
-            group_name=GroupEnum.admin,
-            active=True,
-            password=generate_password_hash('admin123', 10)
-        )
+    @patch('calendar_lib.data_access.user_dao.UserDao.get_user_by_email')
+    def test_login_wrong_password(self, mock_get_user):
         # Wrong password
+        mock_get_user.return_value = create_mock_user()
         payload = UserLoginRequest(username='admin@admin.com', password='test123')
         with pytest.raises(Exception, match='Password is wrong.'):
             self.auth_use_case.login(payload)
 
-        # Success case
-        payload = UserLoginRequest(username='admin@admin.com', password='admin123')
-        user = self.user_dao.get_user_by_email_with_password(payload.username)
+    @patch('calendar_lib.data_access.user_dao.UserDao.get_user_by_email')
+    def test_login_success(self, mock_get_user):
+        mock_user = create_mock_user()
+        mock_get_user.return_value = mock_user
+
+        # Login with correct credentials
+        payload = UserLoginRequest(username=mock_user.email, password='password')
         request = self.auth_use_case.login(payload)
         assert request is not None
-        assert request.uuid == user.uuid
+        assert request.uuid == mock_user.uuid

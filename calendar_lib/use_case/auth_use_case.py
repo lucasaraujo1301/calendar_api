@@ -3,6 +3,7 @@ from typing import List, Dict, Union, Tuple
 
 from calendar_lib.data_access.user_dao import UserDao
 from calendar_lib.data_classes.user import UserLoginRequest, CreateUserRequest, User
+from calendar_lib.exceptions.user_exceptions import UserNotFoundError, PasswordInvalidError
 
 
 class AuthUseCase:
@@ -11,23 +12,31 @@ class AuthUseCase:
         self._dao = user_dao
 
     def login(self, user_request: UserLoginRequest) -> User:
-        user = self._dao.get_user_by_email_with_password(user_request.username)
-        self.logger.warning(user)
+        self.logger.info('Getting the user with password column')
+        user = self._dao.get_user_by_email(user_request.username, True)
+
+        self.logger.debug(f'Debugging user: {user}')
         if not user:
             self.logger.warning("User doesn't exist.")
-            raise Exception("User doesn't exist.")
+            raise UserNotFoundError("User doesn't exist.")
 
-        if user.validate_password(user_request.password) and user.active:
-            return user
+        if not user.validate_password(user_request.password):
+            self.logger.warning('Password is wrong.')
+            raise PasswordInvalidError('Password is wrong.')
 
-        self.logger.warning('Password is wrong.')
-        raise Exception('Password is wrong.')
+        if not user.active:
+            self.logger.warning('User is not active.')
+            raise UserNotFoundError("User doesn't exist.")
+
+        return user
 
     def register(self, user_request: CreateUserRequest) -> Union[Tuple[None, List[Dict]], Tuple[None, None]]:
         errors = []
         if self._dao.get_user_by_cpf(user_request.cpf):
+            self.logger.warning('CPF already exist.')
             errors.append({'cpf': 'CPF already exist.'})
-        if self._dao.get_user_by_email_with_password(user_request.email):
+        if self._dao.get_user_by_email(user_request.email, True):
+            self.logger.warning('CPF already exist.')
             errors.append({'email': 'Email already exist.'})
         if errors:
             return None, errors
