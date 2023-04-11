@@ -14,6 +14,7 @@ class Database:
         self._db = self.connect_db(connection_string)
 
     def connect_db(self, connection_string):
+        self.logger.info('Connecting the database.')
         connection = psycopg2.connect(connection_string, cursor_factory=psycopg2.extras.DictCursor)
         connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
         psycopg2.extras.register_uuid(conn_or_curs=connection)
@@ -24,11 +25,12 @@ class Database:
 
     def close_db(self):
         if self._db and getattr(self._db, 'closed') == 0:
+            self.logger.info('Closing the database.')
             self._db.close()
 
     def get_db(self):
         if self._db is None or (self.connection_string and getattr(self._db, 'closed') > 0):
-            self.logger.warning(f'Reconnect needed for {self._db_name}')
+            self.logger.warning(f'Reconnect needed for {self._db_name}.')
             return self.connect_db(self.connection_string[self._db_name])
         return self._db
 
@@ -42,6 +44,8 @@ class Database:
                     cur.execute(sql, args)
                     query_result = cur.fetchone()
                     self._db.commit()
+                    self.logger.info('Closing the database after completing the query.')
+                    self.close_db()
                     return query_result
                 except psycopg2.extensions.TransactionRollbackError:
                     self.logger.warning('Transaction Error Rollback triggered')
@@ -64,6 +68,8 @@ class Database:
                     cur.execute(sql, args)
                     query_result = cur.fetchall()
                     self._db.commit()
+                    self.logger.info('Closing the database after completing the query.')
+                    self.close_db()
                     return query_result
                 except psycopg2.extensions.TransactionRollbackError:
                     self.logger.warning('Transaction Error Rollback triggered')
@@ -86,6 +92,8 @@ class Database:
                 try:
                     cur.execute(sql, args)
                     self._db.commit()
+                    self.logger.info('Closing the database after completing the query.')
+                    self.close_db()
                     break
                 except psycopg2.extensions.TransactionRollbackError:
                     self.logger.warning('Transaction Error Rollback triggered')
