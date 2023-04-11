@@ -1,4 +1,3 @@
-import datetime
 from unittest import TestCase
 
 from calendar_lib.data_access.database import Database
