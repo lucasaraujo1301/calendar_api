@@ -26,17 +26,17 @@ class AuthUseCase:
 
         if not user.active:
             self.logger.warning('User is not active.')
-            raise UserNotFoundError("User doesn't exist.")
+            raise UserNotFoundError('User is not active.')
 
         return user
 
     def register(self, user_request: CreateUserRequest) -> Union[Tuple[None, List[Dict]], Tuple[None, None]]:
         errors = []
-        if self._dao.get_user_by_cpf(user_request.cpf):
+        if self._dao.get_user_by_cpf(user_request.cpf) is not None:
             self.logger.warning('CPF already exist.')
             errors.append({'cpf': 'CPF already exist.'})
-        if self._dao.get_user_by_email(user_request.email, True):
-            self.logger.warning('CPF already exist.')
+        if self._dao.get_user_by_email(user_request.email) is not None:
+            self.logger.warning('Email already exist.')
             errors.append({'email': 'Email already exist.'})
         if errors:
             return None, errors

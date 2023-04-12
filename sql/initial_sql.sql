@@ -19,6 +19,9 @@ DO
 
                     INSERT INTO migrations (name)
                     VALUES ('groups');
+
+                    INSERT INTO groups (name)
+                    VALUES ('admin'), ('user');
             END IF;
         END;
     $do$;
