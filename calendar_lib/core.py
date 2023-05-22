@@ -14,3 +14,7 @@ class Core:
             logger=self.logger,
             user_dao=self._dao_factory.user_dao()
         )
+
+    @property
+    def dao_factory(self):
+        return self._dao_factory

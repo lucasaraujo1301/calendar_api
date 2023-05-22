@@ -15,7 +15,7 @@ class AuthUseCase:
         self.logger.info('Getting the user with password column')
         user = self._dao.get_user_by_email(user_request.username, True)
 
-        self.logger.debug(f'Debugging user: {user}')
+        self.logger.info(f'Debugging user: {user}')
         if not user:
             self.logger.warning("User doesn't exist.")
             raise UserNotFoundError("User doesn't exist.")
