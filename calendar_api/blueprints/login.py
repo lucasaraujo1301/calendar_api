@@ -1,3 +1,5 @@
+import datetime
+
 import psycopg2.errors
 from flask import Blueprint, jsonify, g, abort
 from flask_jwt_extended import create_access_token
@@ -13,7 +15,13 @@ app = Blueprint('auth', __name__, url_prefix='/auth')
 def login(user_request: UserLoginRequest):
     try:
         user = g.core.auth_use_case().login(user_request)
-        access_token = create_access_token(identity=user.uuid, additional_claims={'group': user.group_name})
+        access_token = create_access_token(
+            identity=user.uuid,
+            additional_claims={
+                'group': user.group_name,
+                'created_at': datetime.datetime.now()
+            }
+        )
         return jsonify(access_token=access_token), 200
     except Exception:
         abort(401)
