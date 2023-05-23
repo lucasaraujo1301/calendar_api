@@ -1,13 +1,13 @@
 from unittest import TestCase
 
 from calendar_lib.data_access.database import Database
-from calendar_lib.utils import get_config_secrets
+from calendar_lib.utils import get_db_configs
 
 
 class TestDatabase(TestCase):
     def setUp(self):
-        self.config_secrets = get_config_secrets()
-        self.database = Database(self.config_secrets['connect_db'], 'calendar_api')
+        self.connection_string, self.db_name = get_db_configs()
+        self.database = Database(self.connection_string, self.db_name)
 
     def test_connect_db(self):
         self.assertIsNotNone(self.database.db)

@@ -1,3 +1,4 @@
+from logging import Logger
 from unittest import TestCase
 
 import pytest
@@ -9,26 +10,24 @@ from calendar_lib.tests.helpers.user_mock import create_mock_user, create_mock_u
 
 
 class TestAuthUseCase(TestCase):
-    core = Core()
-    user_dao = core.dao_factory.user_dao()
-
     def setUp(self):
+        self.core = Core(Logger('CalendarApi'))
+        self.user_dao = self.core.dao_factory.user_dao()
         self.auth_use_case = self.core.auth_use_case()
         self.mock_user_return = create_mock_user()
         self.mock_user_dao = mock(self.user_dao)
 
-    @classmethod
-    def tearDownClass(cls):
+    def tearDown(self):
         """
         Method to delete the user created by the tests and close the database connection
         :return: None
         """
         user_created = create_mock_user()
         query = "DELETE FROM users WHERE email = %s;"
-        cls.user_dao.execute(query, user_created.email)
-        cls.user_dao._db.close()
+        self.user_dao.execute(query, user_created.email)
+        self.user_dao._db.close()
 
-        assert cls.user_dao._db.closed > 0
+        assert self.user_dao._db.closed > 0
 
     def test_login_user_doesnt_exist(self):
         # User doesn't exist
