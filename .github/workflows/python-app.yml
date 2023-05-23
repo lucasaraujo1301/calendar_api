@@ -20,7 +20,7 @@ jobs:
       postgres:
         image: postgres
         env:
-          DG_USER: postgres
+          DB_USER: postgres
           DB_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           DB_NAME: calendar_api
         ports:
