@@ -5,9 +5,9 @@ from calendar_lib.use_case.auth_use_case import AuthUseCase
 
 
 class Core:
-    def __init__(self):
+    def __init__(self, logger: Logger):
         self._dao_factory = DaoFactory()
-        self.logger = Logger(name='CalendarApi')
+        self.logger = logger
 
     def auth_use_case(self) -> AuthUseCase:
         return AuthUseCase(

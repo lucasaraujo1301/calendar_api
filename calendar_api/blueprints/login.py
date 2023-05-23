@@ -1,7 +1,7 @@
 import datetime
 
 import psycopg2.errors
-from flask import Blueprint, jsonify, g, abort
+from flask import Blueprint, jsonify, g
 from flask_jwt_extended import create_access_token
 
 from calendar_lib.data_classes.user import UserLoginRequest, CreateUserRequest
@@ -23,8 +23,8 @@ def login(user_request: UserLoginRequest):
             }
         )
         return jsonify(access_token=access_token), 200
-    except Exception:
-        abort(401)
+    except Exception as e:
+        return jsonify(message=str(e)), 401
 
 
 @app.route('/register', methods=['POST'])
